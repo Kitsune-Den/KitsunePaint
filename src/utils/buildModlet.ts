@@ -5,6 +5,34 @@ export function sanitizeId(name: string): string {
   return name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')
 }
 
+/**
+ * Detect paints whose names sanitize to the same ID. Returns groups of
+ * conflicting display names keyed by their shared sanitized ID.
+ *
+ * This catches cases like "WP 11061570 various wallpapers" and
+ * "wp11061570_various_wallpapers" both reducing to the same paint ID,
+ * which would produce duplicate painting.xml entries and bundles with
+ * identical internal asset paths ~ causing Unity to throw bundle
+ * collision errors and OCB to register paints into colliding slots.
+ *
+ * Returns: { sanitizedId -> [displayName1, displayName2, ...] } for
+ * any IDs that have more than one source paint.
+ */
+export function findDuplicatePaintIds(paints: PackConfig['paints']): Record<string, string[]> {
+  const groups: Record<string, string[]> = {}
+  for (const paint of paints) {
+    const id = sanitizeId(paint.name)
+    if (!id) continue
+    if (!groups[id]) groups[id] = []
+    groups[id].push(paint.name)
+  }
+  const conflicts: Record<string, string[]> = {}
+  for (const id of Object.keys(groups)) {
+    if (groups[id].length > 1) conflicts[id] = groups[id]
+  }
+  return conflicts
+}
+
 /** Expand paints into individual tile entries (multi-block paints become multiple 1x1 paints). */
 export function expandPaints(paints: PackConfig['paints']): { paintId: string; name: string; baseName: string; group: string; bundleIndex: number }[] {
   const entries: { paintId: string; name: string; baseName: string; group: string; bundleIndex: number }[] = []
@@ -265,6 +293,17 @@ export async function buildModletZip(
   config: PackConfig,
   onProgress?: (current: number, total: number, name: string) => void,
 ): Promise<Blob> {
+  // Refuse to build if any two paints sanitize to the same ID ~ without this
+  // check we'd silently generate duplicate painting.xml entries and bundles
+  // with identical internal asset paths, which Unity then refuses to load
+  // (every other paint shows up in-game). Better to fail loudly at build time.
+  const dupes = findDuplicatePaintIds(config.paints)
+  const dupKeys = Object.keys(dupes)
+  if (dupKeys.length > 0) {
+    const groups = dupKeys.map(id => `"${dupes[id].join('", "')}" → ${id}`).join('; ')
+    throw new Error(`Duplicate paint names detected: ${groups}. Each paint needs a unique name; two paints whose names reduce to the same ID would collide on load.`)
+  }
+
   const zip = new JSZip()
   const packId = sanitizeId(config.packName)
   const root = zip.folder(packId)!

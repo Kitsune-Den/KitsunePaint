@@ -22,6 +22,24 @@ export interface FriendlyError {
  * return a friendly version. Order matters ~ first match wins.
  */
 const PATTERNS: { match: RegExp | string; build: (raw: string) => FriendlyError }[] = [
+  // Duplicate paint names ~ two paints whose names sanitize to the same ID
+  // would generate duplicate painting.xml entries and bundles with identical
+  // internal asset paths, which Unity refuses to load.
+  {
+    match: /duplicate paint names/i,
+    build: (raw: string) => {
+      // Pull the "groups" segment out of the raw message so we can show
+      // the user exactly which paints are colliding.
+      const m = raw.match(/Duplicate paint names detected:\s*([^.]+)/i)
+      const detail = m ? m[1].trim() : ''
+      return {
+        title: 'Two paints have the same name',
+        body: `Each paint needs a unique name ~ if two paints reduce to the same ID, they collide on load and only one shows up. ${detail ? `Conflicting paints: ${detail}. ` : ''}Rename the duplicates and rebuild.`,
+        action: 'OK, I\'ll rename them',
+      }
+    },
+  },
+
   // Non-square source ~ the most common one. Server-side check.
   {
     match: /non-?square source/i,
