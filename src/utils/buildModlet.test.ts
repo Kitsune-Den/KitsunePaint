@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { sanitizeId, generatePaintingXml, generateLocalization, generateModInfoXml } from './buildModlet'
+import { sanitizeId, generatePaintingXml, generateLocalization, generateModInfoXml, findDuplicatePaintIds } from './buildModlet'
 import type { PackConfig } from '../types'
 
 // Helper to create a mock File (vitest runs in Node, no real File API)
@@ -189,5 +189,53 @@ describe('generatePaintingXml multi-block (tile slicing)', () => {
     expect(loc).toContain(',Big Tile 02')
     expect(loc).toContain(',Big Tile 03')
     expect(loc).toContain(',Big Tile 04')
+  })
+})
+
+describe('findDuplicatePaintIds', () => {
+  function paint(name: string): PackConfig['paints'][0] {
+    return {
+      id: name,
+      name,
+      group: 'stone',
+      tilingX: 1,
+      tilingY: 1,
+      gridWidth: 1,
+      gridHeight: 1,
+      textures: { diffuse: new File([''], `${name}.png`, { type: 'image/png' }) },
+    }
+  }
+
+  it('returns empty object when all paint names are unique', () => {
+    const dupes = findDuplicatePaintIds([paint('Red Brick'), paint('Blue Stone'), paint('Green Wood')])
+    expect(Object.keys(dupes)).toHaveLength(0)
+  })
+
+  it('detects names that sanitize to identical IDs', () => {
+    // "Red Brick" and "red_brick" both sanitize to "red_brick"
+    const dupes = findDuplicatePaintIds([paint('Red Brick'), paint('red_brick')])
+    expect(dupes['red_brick']).toEqual(['Red Brick', 'red_brick'])
+  })
+
+  it('groups three or more variants under one sanitized key', () => {
+    // All three reduce to "red_brick": casing + special-char stripping
+    const dupes = findDuplicatePaintIds([
+      paint('Red Brick'),
+      paint('red_brick'),
+      paint('RED   BRICK'), // extra spaces collapse to one underscore
+    ])
+    expect(dupes['red_brick']).toHaveLength(3)
+  })
+
+  it('detects collisions from special-character stripping', () => {
+    // "Wood-Floor!" → "woodfloor"  (dash and bang stripped, no whitespace)
+    // "woodfloor"   → "woodfloor"
+    const dupes = findDuplicatePaintIds([paint('Wood-Floor!'), paint('woodfloor')])
+    expect(dupes['woodfloor']).toHaveLength(2)
+  })
+
+  it('does not flag unrelated paints even with similar names', () => {
+    const dupes = findDuplicatePaintIds([paint('brick_1'), paint('brick_2'), paint('brick_3')])
+    expect(Object.keys(dupes)).toHaveLength(0)
   })
 })
