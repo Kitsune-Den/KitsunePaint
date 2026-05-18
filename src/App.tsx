@@ -3,7 +3,7 @@ import { TextureUploader } from './components/TextureUploader'
 import { WallPreview } from './components/WallPreview'
 import { PaintTray } from './components/PaintTray'
 import { PackMeta } from './components/PackMeta'
-import { buildModletZip } from './utils/buildModlet'
+import { buildModletZip, sanitizeId } from './utils/buildModlet'
 import LandingPage from './pages/LandingPage'
 import TermsPage from './pages/TermsPage'
 import ChangelogPage from './pages/ChangelogPage'
@@ -151,7 +151,17 @@ function AppTool() {
     setBuildProgress('')
   }
 
-  const canAdd = !!currentFiles.diffuse && !!textureName.trim()
+  // Check if the current name would collide with an existing paint after
+  // ID sanitization. Catches not just exact matches but also names that
+  // reduce to the same ID (e.g. "Wood Wall" and "wood-wall" both become
+  // "wood_wall"). Same logic the build-time backstop uses ~ we just run
+  // it earlier so users never accumulate duplicates.
+  // When editing an existing paint, exclude it from the comparison so
+  // re-saving the same name doesn't flag itself.
+  const currentSanitized = textureName.trim() ? sanitizeId(textureName) : ''
+  const duplicateOfExisting = currentSanitized
+    && paints.some(p => p.id !== selectedId && sanitizeId(p.name) === currentSanitized)
+  const canAdd = !!currentFiles.diffuse && !!textureName.trim() && !duplicateOfExisting
   const canDownload = paints.length > 0 && !!packName.trim()
   const GROUPS: PaintGroup[] = ['wood', 'stone', 'wallpaper', 'tile', 'plaster', 'metal', 'carpet', 'custom']
 
@@ -188,7 +198,16 @@ function AppTool() {
                 <label className="text-xs text-zinc-400">Paint Name</label>
                 <input type="text" value={textureName} onChange={(e) => setTextureName(e.target.value)}
                   placeholder="e.g. oak floor"
-                  className="bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-amber-500 transition-colors" />
+                  className={`bg-zinc-900 border rounded px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none transition-colors ${
+                    duplicateOfExisting
+                      ? 'border-amber-500/60 focus:border-amber-400'
+                      : 'border-zinc-700 focus:border-amber-500'
+                  }`} />
+                {duplicateOfExisting && (
+                  <p className="text-[11px] text-amber-400 mt-1">
+                    ⚠️ A paint named "{textureName}" is already in this pack ~ pick a different name.
+                  </p>
+                )}
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs text-zinc-400">Group</label>
@@ -250,7 +269,7 @@ function AppTool() {
               </div>
               <button onClick={handleAddToPack} disabled={!canAdd}
                 className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-all duration-150 ${canAdd ? 'bg-amber-500 hover:bg-amber-400 text-zinc-950 cursor-pointer' : 'bg-zinc-800 text-zinc-600 cursor-not-allowed'}`}>
-                + Add to Pack
+                {duplicateOfExisting ? 'Duplicate name ~ pick a different one' : '+ Add to Pack'}
               </button>
             </section>
           </div>
