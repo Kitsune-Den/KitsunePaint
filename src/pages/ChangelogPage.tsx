@@ -10,6 +10,14 @@ type Release = { version: string; date: string; changes: Change[] }
 
 const RELEASES: Release[] = [
   {
+    version: '1.6.4',
+    date: 'May 2026',
+    changes: [
+      { type: 'added', text: 'Duplicate paint name detection at add-time. If you try to add a paint with a name that\'s already in your pack (or one that reduces to the same ID, like "Wood Wall" vs "wood_wall"), you\'ll see a clear warning right under the name field instead of finding out at download time.' },
+      { type: 'improved', text: 'The "Add to Pack" button now tells you exactly why it\'s disabled instead of just being grey.' },
+    ],
+  },
+  {
     version: '1.6.2',
     date: 'May 2026',
     changes: [
