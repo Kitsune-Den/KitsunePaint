@@ -145,24 +145,39 @@ app.use((req, res, next) => {
 })
 
 // Rate limiter for the bundle build endpoint. Each Python subprocess takes
-// ~2 seconds and runs serially, so a single automated caller flooding the
-// endpoint can choke real users. Cap at 50 builds/hour per IP ~ a heavy
-// Each paint in a pack = one bundle build call. Real-world packs run
-// 30-100 paints (DEMON911's was 50+, others have hit the limit at 51).
-// Plus users retry when a build fails partway through, stacking attempts.
-// 250/hour gives ample room for a real 100-paint pack with a retry or two,
-// while still cutting off automated bulk scrapers (which would burn through
-// 250 in seconds, not minutes).
+// Rate limit policy:
+//   - Real browsers (full fingerprint: Mozilla UA + Sec-Fetch-Site +
+//     Accept-Language) → skipped. A human clicking through paint.kitsuneden.net
+//     has natural pauses between uploads and can never realistically abuse
+//     this endpoint at the rate that would matter. The previous 50/hr (and
+//     then 250/hr) cap was hitting legitimate human packs with 50-100 paints.
+//   - Paid API key holders (req.apiKeyLabel set) → skipped. They paid for
+//     server-to-server access; rate-limiting them defeats the purpose.
+//   - Everyone else (curl, scripts, headless tools faking only Origin) →
+//     250/hour per IP. Caps automated scrapers without blocking real humans.
+//
+// Safety net: the audit log ([AUDIT][SPOOF] lines) surfaces anyone faking
+// the full browser fingerprint. If we ever see real abuse, we can revoke
+// keys or block IPs at the firewall ~ but the policy stays human-friendly
+// by default.
 const buildLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 250,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // Paid customers bypass entirely
+    if (req.apiKeyLabel) return true
+    // Real browsers bypass entirely (see audit.cjs for fingerprint logic)
+    if (audit.isLikelyBrowser(req)) return true
+    return false
+  },
   message: {
     error:
-      'Rate limit hit ~ max 250 bundle builds per hour. ' +
-      'Try again in a bit, or grab the DIY kit and run the same compiler ' +
-      'locally with no caps: https://paint.kitsuneden.net/KitsunePaint-DIY-Kit.zip',
+      'Rate limit hit ~ max 250 bundle builds per hour for non-browser clients. ' +
+      'If you\'re building from a browser this shouldn\'t happen ~ if it does, ' +
+      'email adainthelab@gmail.com. For scripted/bulk use, grab the DIY kit: ' +
+      'https://paint.kitsuneden.net/KitsunePaint-DIY-Kit.zip',
   },
   // Log every 429 we issue so `journalctl -u kitsunepaint | grep rate-limit`
   // surfaces blocked callers. Useful for spotting masonic-style bursts and
