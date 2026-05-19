@@ -147,16 +147,20 @@ app.use((req, res, next) => {
 // Rate limiter for the bundle build endpoint. Each Python subprocess takes
 // ~2 seconds and runs serially, so a single automated caller flooding the
 // endpoint can choke real users. Cap at 50 builds/hour per IP ~ a heavy
-// 7DTD modder building a 23-paint pack hits ~23/hour, comfortable headroom.
-// Automated bulk callers exceeding 50 should slow down or batch differently.
+// Each paint in a pack = one bundle build call. Real-world packs run
+// 30-100 paints (DEMON911's was 50+, others have hit the limit at 51).
+// Plus users retry when a build fails partway through, stacking attempts.
+// 250/hour gives ample room for a real 100-paint pack with a retry or two,
+// while still cutting off automated bulk scrapers (which would burn through
+// 250 in seconds, not minutes).
 const buildLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 50,
+  max: 250,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     error:
-      'Rate limit hit ~ max 50 bundle builds per hour. ' +
+      'Rate limit hit ~ max 250 bundle builds per hour. ' +
       'Try again in a bit, or grab the DIY kit and run the same compiler ' +
       'locally with no caps: https://paint.kitsuneden.net/KitsunePaint-DIY-Kit.zip',
   },
