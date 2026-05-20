@@ -10,11 +10,19 @@ type Release = { version: string; date: string; changes: Change[] }
 
 const RELEASES: Release[] = [
   {
-    version: '1.6.4',
+    version: '1.6.6',
+    date: 'May 2026',
+    changes: [
+      { type: 'fixed', text: 'Unreadable image files now get a clear, accurate error. Before, a corrupt or wrong-format texture showed a misleading "the server may be busy" message ~ now it tells you the actual problem (the file couldn\'t be decoded) and how to fix it (re-export as a standard 8-bit PNG).' },
+    ],
+  },
+  {
+    version: '1.6.5',
     date: 'May 2026',
     changes: [
       { type: 'added', text: 'Duplicate paint name detection at add-time. If you try to add a paint with a name that\'s already in your pack (or one that reduces to the same ID, like "Wood Wall" vs "wood_wall"), you\'ll see a clear warning right under the name field instead of finding out at download time.' },
       { type: 'improved', text: 'The "Add to Pack" button now tells you exactly why it\'s disabled instead of just being grey.' },
+      { type: 'fixed', text: 'Rate limit no longer hits real humans. Building from the browser is unlimited; only scripts and bulk callers are throttled (75/hour). If you\'ve been hitting "slow down, you\'re going too fast" with a normal 50+ paint pack ~ that should be gone now.' },
     ],
   },
   {
