@@ -10,6 +10,13 @@ type Release = { version: string; date: string; changes: Change[] }
 
 const RELEASES: Release[] = [
   {
+    version: '1.6.6',
+    date: 'May 2026',
+    changes: [
+      { type: 'fixed', text: 'Unreadable image files now get a clear, accurate error. Before, a corrupt or wrong-format texture showed a misleading "the server may be busy" message ~ now it tells you the actual problem (the file couldn\'t be decoded) and how to fix it (re-export as a standard 8-bit PNG).' },
+    ],
+  },
+  {
     version: '1.6.5',
     date: 'May 2026',
     changes: [

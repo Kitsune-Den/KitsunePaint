@@ -80,13 +80,17 @@ const PATTERNS: { match: RegExp | string; build: (raw: string) => FriendlyError 
     }),
   },
 
-  // Corrupt/unreadable image
+  // Corrupt/unreadable image ~ covers both the browser-side decode failure
+  // (createImageBitmap throws "The source image could not be decoded" on
+  // weird formats) and Pillow's server-side read failures. Most common
+  // real cause: a file with a .png/.jpg extension that's actually a
+  // renamed HEIC/AVIF/WebP, or a 16-bit / CMYK image.
   {
-    match: /cannot identify image|broken|truncated|invalid.*image/i,
+    match: /could not be decoded|cannot identify image|could not be read|broken|truncated|invalid.*image/i,
     build: () => ({
-      title: 'That image file looks corrupted',
-      body: 'I couldn\'t read the image you uploaded. Try saving it again from your editor (PNG or JPG), or pick a different source file.',
-      action: 'OK',
+      title: 'That image file couldn\'t be read',
+      body: 'One of your texture images couldn\'t be decoded. Usually this means the file is corrupt, or it\'s saved in a format that looks like a PNG/JPG but isn\'t ~ a renamed HEIC, AVIF, or WebP, or a 16-bit / CMYK image. Open it in an image editor (even Paint or Preview works) and re-export it as a standard 8-bit PNG, then try again.',
+      action: 'OK, I\'ll re-export it',
     }),
   },
 

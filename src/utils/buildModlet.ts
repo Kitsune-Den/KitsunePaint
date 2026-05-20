@@ -378,9 +378,15 @@ export async function buildModletZip(
       // referenced by painting.xml). Better to surface the error so the user
       // can retry rather than ship them a pack that won't load in-game.
       console.error(`Failed to build bundle for ${paint.name}:`, err)
-      throw new Error(
-        `Couldn't build the bundle for "${paint.name}". The server may be busy ~ please try again in a moment. (${err instanceof Error ? err.message : 'unknown error'})`
-      )
+      const detail = err instanceof Error ? err.message : 'unknown error'
+      // Don't blame the server for client-side image decode failures ~ those
+      // are bad/corrupt source files, nothing to do with server load. Let
+      // the raw detail through so friendlyError.ts can match + advise.
+      const isClientImageError = /could not be decoded|could not be read|cannot identify image/i.test(detail)
+      const prefix = isClientImageError
+        ? `Couldn't build the bundle for "${paint.name}".`
+        : `Couldn't build the bundle for "${paint.name}". The server may be busy ~ please try again in a moment.`
+      throw new Error(`${prefix} (${detail})`)
     }
   }
 
