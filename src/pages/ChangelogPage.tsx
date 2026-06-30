@@ -10,6 +10,13 @@ type Release = { version: string; date: string; changes: Change[] }
 
 const RELEASES: Release[] = [
   {
+    version: '1.7.0',
+    date: 'June 2026',
+    changes: [
+      { type: 'changed', text: 'Updated for 7 Days to Die V3.0 ("Dead Hot Summer"). The paint pack format is unchanged from V2.x, and it runs on the V3.0-ready OCBCustomTextures fork (v0.8.1), so existing and newly built packs work on V3.0 with no changes on your end.' },
+    ],
+  },
+  {
     version: '1.6.6',
     date: 'May 2026',
     changes: [
