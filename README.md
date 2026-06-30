@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://www.nexusmods.com/7daystodie/mods/10021"><img src="https://img.shields.io/badge/Download-Nexus_Mods-da8e35?style=flat&logo=nexusmods&logoColor=white" alt="Download on Nexus Mods" /></a>
   <a href="https://paint.kitsuneden.net"><img src="https://img.shields.io/badge/Live_Tool-paint.kitsuneden.net-14b8a6?style=flat" alt="Live Tool" /></a>
-  <a href="https://7daystodie.com"><img src="https://img.shields.io/badge/7_Days_to_Die-V2.0--V3.0-8b0000?style=flat" alt="7 Days to Die V2.0–V3.0" /></a>
+  <a href="https://7daystodie.com"><img src="https://img.shields.io/badge/7_Days_to_Die-V2.0--V3.0-8b0000?style=flat" alt="7 Days to Die V2.0-V3.0" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/Kitsune-Den/KitsunePaint?style=flat" alt="License" /></a>
   <a href="https://github.com/Kitsune-Den/KitsunePaint/stargazers"><img src="https://img.shields.io/github/stars/Kitsune-Den/KitsunePaint?style=flat&logo=github" alt="GitHub stars" /></a>
 </p>
@@ -40,7 +40,7 @@ This generates per-paint Unity asset bundles with proper mipmap data, DXTnm norm
 
 - [OCBCustomTextures](https://www.nexusmods.com/7daystodie/mods/2788) v0.8.0+ (must be installed on server and client)
 - EAC must be disabled on both server and client
-- 7 Days to Die V2.0–V3.0 (incl. V3.0 "Dead Hot Summer")
+- 7 Days to Die V2.0-V3.0 (incl. V3.0 "Dead Hot Summer")
 - Python + `pip install UnityPy Pillow` (for bundle builder only)
 
 ## Tech Stack
@@ -57,7 +57,7 @@ src/
   components/       # TextureUploader, WallPreview, PaintTray, PackMeta
   pages/            # LandingPage, routed via App.tsx
   types/            # TypeScript type definitions
-  utils/            # buildModlet.ts — zip generation
+  utils/            # buildModlet.ts - zip generation
 scripts/
   build_bundle.py   # Python bundle builder
   Atlas.template.unity3d  # Template bundle for injection
