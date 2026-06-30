@@ -165,7 +165,7 @@ export default function LandingPage() {
         </div>
 
         <p className={`mt-6 text-xs text-zinc-600 transition-all duration-1000 delay-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
-          Requires <a href="https://www.nexusmods.com/7daystodie/mods/2788" className="text-zinc-500 hover:text-amber-500 underline underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">OCBCustomTextures</a> · EAC must be off · V2.0+ · <a href="#bundle-builder" className="text-zinc-500 hover:text-amber-500 underline underline-offset-2 transition-colors">Run locally with the DIY kit</a>
+          Requires <a href="https://www.nexusmods.com/7daystodie/mods/2788" className="text-zinc-500 hover:text-amber-500 underline underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">OCBCustomTextures</a> · EAC must be off · V2.0–V3.0 · <a href="#bundle-builder" className="text-zinc-500 hover:text-amber-500 underline underline-offset-2 transition-colors">Run locally with the DIY kit</a>
         </p>
       </main>
 
