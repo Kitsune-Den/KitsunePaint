@@ -102,15 +102,24 @@ export function generateLocalization(config: PackConfig): string {
   return [header, ...rows].join('\n')
 }
 
+// 7DTD ModInfo has no game-version field, so the build target is surfaced in
+// the Description. The pack is version-agnostic (V2.x/V3.x share Unity runtime
+// + paint schema), so we always note cross-version support.
+export function gameVersionCompatNote(gameVersion?: '2.x' | '3.x'): string {
+  const target = gameVersion === '2.x' ? 'V2.x' : 'V3.x'
+  return `Built for 7DTD ${target} (works on both V2.x and V3.x).`
+}
+
 export function generateModInfoXml(config: PackConfig): string {
   const packId = sanitizeId(config.packName)
+  const note = gameVersionCompatNote(config.gameVersion)
   return `<?xml version="1.0" encoding="UTF-8"?>
 <xml>
   <Name value="${packId}"/>
   <DisplayName value="${config.packName}"/>
   <Version value="${config.packVersion}"/>
   <Author value="${config.packAuthor}"/>
-  <Description value="Custom paint pack created with KitsunePaint. Requires OCBCustomTextures."/>
+  <Description value="Custom paint pack created with KitsunePaint. Requires OCBCustomTextures. ${note}"/>
   <Website value=""/>
 </xml>`
 }
@@ -122,20 +131,23 @@ function generateReadme(config: PackConfig): string {
     return `  ${String(i + 1).padStart(3, ' ')}. ${p.name} (${p.group}) [${maps}]`
   }).join('\n')
 
+  const gv = config.gameVersion === '2.x' ? '2.x' : '3.x'
   return `# ${config.packName}
 Author: ${config.packAuthor}
 Created with KitsunePaint 🦊
+Built for 7 Days to Die ${gv === '2.x' ? 'V2.x' : 'V3.x'} (works on both V2.x and V3.x)
 
 ## Paints included (${config.paints.length})
 ${paintList}
 
 ## Installation
-1. Install OCBCustomTextures: https://www.nexusmods.com/7daystodie/mods/2788
+1. Install OCBCustomTextures (https://www.nexusmods.com/7daystodie/mods/2788) ~ download the build that matches your game version (7DTD ${gv === '2.x' ? 'V2.x' : 'V3.x'})
 2. Disable EAC on server and client
 3. Drop this folder into your 7 Days to Die Mods/ directory
 4. Restart server and client
 
 ## Notes
+- This pack is version-agnostic: V2.x and V3.x share the same Unity runtime and paint format, so it works on both. Just match your OCBCustomTextures install to your game version.
 - One Atlas_XXX.unity3d bundle is generated per paint
 - Normal and specular maps use defaults if not provided
 - Vanilla supports up to 255 paints. With PaintUnlocked, supports up to 1023

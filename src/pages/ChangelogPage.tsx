@@ -10,6 +10,13 @@ type Release = { version: string; date: string; changes: Change[] }
 
 const RELEASES: Release[] = [
   {
+    version: '1.8.0',
+    date: 'June 2026',
+    changes: [
+      { type: 'added', text: 'Game-version picker (7DTD V2.x / V3.x) in Pack Info. Paint packs are version-agnostic ~ V2.x and V3.x share the same Unity runtime and paint format, so a pack works on both. The picker stamps your build target into the pack\'s ModInfo and points the bundled README at the matching OCBCustomTextures build for your game version. Defaults to V3.x.' },
+    ],
+  },
+  {
     version: '1.7.0',
     date: 'June 2026',
     changes: [
