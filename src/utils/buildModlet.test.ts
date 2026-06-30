@@ -134,6 +134,16 @@ describe('generateModInfoXml', () => {
     const xml = generateModInfoXml(mockConfig())
     expect(xml).toContain('OCBCustomTextures')
   })
+
+  it('stamps the V3.x build target by default', () => {
+    const xml = generateModInfoXml(mockConfig())
+    expect(xml).toContain('Built for 7DTD V3.x (works on both V2.x and V3.x).')
+  })
+
+  it('stamps the V2.x build target when 2.x is selected', () => {
+    const xml = generateModInfoXml(mockConfig({ gameVersion: '2.x' }))
+    expect(xml).toContain('Built for 7DTD V2.x (works on both V2.x and V3.x).')
+  })
 })
 
 describe('generatePaintingXml multi-block (tile slicing)', () => {

@@ -36,6 +36,7 @@ function AppTool() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [packName, setPackName] = useState('')
   const [packAuthor, setPackAuthor] = useState('')
+  const [gameVersion, setGameVersion] = useState<'2.x' | '3.x'>('3.x')
   const [isBuilding, setIsBuilding] = useState(false)
   const [buildProgress, setBuildProgress] = useState('')
   const [buildError, setBuildError] = useState<FriendlyError | null>(null)
@@ -129,7 +130,7 @@ function AppTool() {
     setBuildProgress('Starting...')
     try {
       const blob = await buildModletZip(
-        { packName, packAuthor, packVersion: '1.0.0', paints },
+        { packName, packAuthor, packVersion: '1.0.0', gameVersion, paints },
         (current, total, name) => setBuildProgress(`Building ${name} (${current}/${total})...`),
       )
       const url = URL.createObjectURL(blob)
@@ -282,7 +283,7 @@ function AppTool() {
         {paints.length > 0 && (
           <div className="border-t border-zinc-800 pt-8 flex flex-col gap-6">
             <PaintTray paints={paints} onRemove={handleRemovePaint} onSelect={handleSelectPaint} selectedId={selectedId} />
-            <PackMeta packName={packName} packAuthor={packAuthor} onChange={handlePackMetaChange} />
+            <PackMeta packName={packName} packAuthor={packAuthor} gameVersion={gameVersion} onChange={handlePackMetaChange} onGameVersionChange={setGameVersion} />
             <button onClick={handleDownload} disabled={!canDownload || isBuilding}
               className={`w-full py-3 rounded-lg text-sm font-semibold transition-all duration-150 ${canDownload && !isBuilding ? 'bg-zinc-100 hover:bg-white text-zinc-950 cursor-pointer' : 'bg-zinc-800 text-zinc-600 cursor-not-allowed'}`}>
               {canDownload ? `⬇ Download "${packName}" Modlet` : 'Add a pack name to download'}
