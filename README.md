@@ -22,7 +22,7 @@ Upload your textures, preview how they tile on a wall, download a ready-to-insta
 1. **Upload:** drag and drop PNG/JPG textures in Simple mode (diffuse only) or PBR mode (diffuse + normal + specular)
 2. **Preview:** see exactly how your texture tiles on a simulated block wall before you commit
 3. **Configure:** name your paint, pick a group (Masonry, Wallpaper, Tiles etc), tweak tiling
-4. **Download:** get a complete `.zip` modlet with painting.xml, Localization.txt, ModInfo.xml, and all source textures
+4. **Download:** get a complete `.zip` modlet with painting.xml, Localization.txt + Localization.csv, ModInfo.xml, and all source textures
 5. **Build bundles:** run the included Python script to generate `Atlas_XXX.unity3d` asset bundles, one per paint, scales to 20+ paints
 
 ## Bundle Builder

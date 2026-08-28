@@ -141,10 +141,23 @@ Built for 7 Days to Die ${gv === '2.x' ? 'V2.x' : 'V3.x'} (works on both V2.x an
 ${paintList}
 
 ## Installation
-1. Install OCBCustomTextures (https://www.nexusmods.com/7daystodie/mods/2788) ~ download the build that matches your game version (7DTD ${gv === '2.x' ? 'V2.x' : 'V3.x'})
-2. Disable EAC on server and client
-3. Drop this folder into your 7 Days to Die Mods/ directory
+EVERY player needs BOTH of these, not just the server. Paint textures are
+rendered on each machine, so a client missing either one sees no custom
+paints at all ~ with no error message anywhere to explain why.
+
+1. Install OCBCustomTextures (https://www.nexusmods.com/7daystodie/mods/2788) ~ download the build that matches your game version (7DTD ${gv === '2.x' ? 'V2.x' : 'V3.x'}). Required on the server AND on every client.
+2. Disable EAC on server and client ~ EAC blocks OCBCustomTextures from loading, which looks exactly like not having installed it
+3. Drop this folder into the 7 Days to Die Mods/ directory on the server AND on every client
 4. Restart server and client
+
+## If the paints don't show up
+The paint pack loads silently whether or not OCBCustomTextures is present, so
+a missing install produces no warning. Check the game log for:
+
+    Loaded Mod: OcbCustomTextures
+
+Missing that line means OCBCustomTextures is not loading ~ either it isn't
+installed on that machine, or EAC is still enabled and blocked it.
 
 ## Notes
 - This pack is version-agnostic: V2.x and V3.x share the same Unity runtime and paint format, so it works on both. Just match your OCBCustomTextures install to your game version.
@@ -325,7 +338,17 @@ export async function buildModletZip(
   root.file('ModInfo.xml', generateModInfoXml(config))
   root.file('README.md', generateReadme(config))
   configFolder.file('painting.xml', generatePaintingXml(config))
-  configFolder.file('Localization.txt', generateLocalization(config))
+  // Ship the localization table under BOTH names. 7DTD renamed its own
+  // Data/Config/Localization.txt to Localization.csv in V3.x, and a modlet
+  // file only merges when its name matches the vanilla file ~ so a V3.x game
+  // silently ignores Localization.txt and every paint falls back to showing
+  // its raw txName_ key in the paint menu. Verified in-game on V3.2.0 (b9):
+  // identical content, .csv resolved and .txt did not. V2.x is the mirror
+  // case, so both files ship to keep packs working on either version. The
+  // unmatched name is ignored without warning on both.
+  const localization = generateLocalization(config)
+  configFolder.file('Localization.txt', localization)
+  configFolder.file('Localization.csv', localization)
 
   // Build .unity3d bundles via the server API
   let bundleIndex = 0
