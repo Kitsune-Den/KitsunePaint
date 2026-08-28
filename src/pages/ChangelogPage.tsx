@@ -10,6 +10,14 @@ type Release = { version: string; date: string; changes: Change[] }
 
 const RELEASES: Release[] = [
   {
+    version: '1.8.1',
+    date: 'August 2026',
+    changes: [
+      { type: 'fixed', text: 'Custom paint names now show up correctly on 7DTD V3.x. The game renamed its own localization table from Localization.txt to Localization.csv in V3, and a modlet file only merges when its name matches ~ so on V3 every paint fell back to displaying its raw internal key (txName_yourpack_yourpaint) in the paint menu instead of the name you gave it. Packs now ship the table under both names, so they read correctly on V2.x and V3.x alike. Rebuild your pack to pick up the fix; no other changes needed.' },
+      { type: 'improved', text: 'The README bundled with your pack now spells out that OCBCustomTextures is required on EVERY machine that plays, not just the server, and that EAC has to be off or it silently blocks OCB from loading. A missing OCB install produces no error message anywhere ~ the pack just loads and the paints never appear ~ so the README now includes the log line to check when no custom paints show up.' },
+    ],
+  },
+  {
     version: '1.8.0',
     date: 'June 2026',
     changes: [
