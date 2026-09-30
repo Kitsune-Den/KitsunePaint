@@ -136,7 +136,12 @@ export default function LandingPage() {
           <img src="/kitsune-paint-hero.webp" alt="KitsunePaint" className="w-64 h-64 md:w-80 md:h-80 object-contain" />
         </div>
 
-        <div className={`transition-all duration-1000 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        <div className={`flex flex-col items-center gap-4 transition-all duration-1000 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          {/* Compatibility pill ~ bump the text when a new game version is verified. */}
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-[11px] tracking-widest uppercase text-amber-300 font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden="true" />
+            Updated for 7DTD V3.3 experimental
+          </span>
           <span className="text-xs tracking-[0.3em] uppercase text-amber-500 font-medium">
             7 Days to Die · Custom Paint Tool
           </span>
@@ -165,7 +170,7 @@ export default function LandingPage() {
         </div>
 
         <p className={`mt-6 text-xs text-zinc-600 transition-all duration-1000 delay-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
-          Requires <a href="https://www.nexusmods.com/7daystodie/mods/2788" className="text-zinc-500 hover:text-amber-500 underline underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">OCBCustomTextures</a> · EAC must be off · V2.0–V3.0 · <a href="#bundle-builder" className="text-zinc-500 hover:text-amber-500 underline underline-offset-2 transition-colors">Run locally with the DIY kit</a>
+          Requires <a href="https://www.nexusmods.com/7daystodie/mods/2788" className="text-zinc-500 hover:text-amber-500 underline underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">OCBCustomTextures</a> · EAC must be off · V2.0–V3.3 · <a href="#bundle-builder" className="text-zinc-500 hover:text-amber-500 underline underline-offset-2 transition-colors">Run locally with the DIY kit</a>
         </p>
       </main>
 
@@ -277,6 +282,29 @@ export default function LandingPage() {
               </details>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Discord callout */}
+      <section className={`relative z-10 border-t border-zinc-800/60 transition-all duration-1000 delay-900 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="max-w-5xl mx-auto px-6 py-16">
+          <a
+            href="https://goodtimes.gg/discord"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block group rounded-2xl overflow-hidden border border-purple-500/30 hover:border-purple-400/60 shadow-[0_0_60px_rgba(168,85,247,0.15)] hover:shadow-[0_0_80px_rgba(168,85,247,0.35)] transition-all duration-300"
+            title="Join the KitsuneDen @ Good Times Discord"
+          >
+            <img
+              src="/discord.webp"
+              alt="Join our Discord ~ KitsuneDen @ Good Times. Come say hi, hang out in voice chat, and ask for modding help, tool tips, and community advice"
+              loading="lazy"
+              className="w-full object-cover group-hover:scale-[1.01] transition-transform duration-500"
+            />
+          </a>
+          <p className="mt-3 text-center text-xs text-zinc-600">
+            Made a pack you're proud of, or stuck on a texture? <a href="https://goodtimes.gg/discord" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 transition-colors">Drop into the Den</a>.
+          </p>
         </div>
       </section>
 
