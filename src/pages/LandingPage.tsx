@@ -292,7 +292,7 @@ export default function LandingPage() {
             href="https://goodtimes.gg/discord"
             target="_blank"
             rel="noopener noreferrer"
-            className="block group rounded-2xl overflow-hidden border border-purple-500/30 hover:border-purple-400/60 shadow-[0_0_60px_rgba(168,85,247,0.15)] hover:shadow-[0_0_80px_rgba(168,85,247,0.35)] transition-all duration-300"
+            className="block group mx-auto max-w-[600px] rounded-2xl overflow-hidden border border-purple-500/30 hover:border-purple-400/60 shadow-[0_0_60px_rgba(168,85,247,0.15)] hover:shadow-[0_0_80px_rgba(168,85,247,0.35)] transition-all duration-300"
             title="Join the KitsuneDen @ Good Times Discord"
           >
             <img
